@@ -1,0 +1,123 @@
+version: '3.8'
+
+services:
+  # Сервис телеграм бота
+  bot:
+    build: ./bot_service
+    container_name: resume-bot
+    restart: always
+    env_file: .env
+    depends_on:
+      - kafka
+      - redis
+    volumes:
+      - ./bot_service:/app
+      - resume_files:/app/files
+
+  # Сервис обработки нейросетью
+  ai_processor:
+    build: ./ai_processor_service
+    container_name: resume-ai-processor
+    restart: always
+    env_file: .env
+    depends_on:
+      - kafka
+      - minio
+    volumes:
+      - ./ai_processor_service:/app
+      - resume_files:/app/files
+
+  # Сервис обратной связи
+  callback:
+    build: ./callback_service
+    container_name: resume-callback
+    restart: always
+    env_file: .env
+    depends_on:
+      - kafka
+      - postgres
+      - redis
+    volumes:
+      - ./callback_service:/app
+
+  # Сервис хранения
+  storage:
+    build: ./storage_service
+    container_name: resume-storage
+    restart: always
+    env_file: .env
+    depends_on:
+      - postgres
+      - redis
+      - minio
+    volumes:
+      - ./storage_service:/app
+      - ./storage_service/migrations:/app/migrations
+
+  # Kafka и Zookeeper
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.0
+    container_name: resume-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:7.3.0
+    container_name: resume-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  # PostgreSQL
+  postgres:
+    image: postgres:16-alpine
+    container_name: resume-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: resume-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # MinIO для S3-совместимого хранения файлов
+  minio:
+    image: minio/minio:latest
+    container_name: resume-minio
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  resume_files:
