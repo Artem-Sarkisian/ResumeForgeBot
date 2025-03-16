@@ -3,20 +3,20 @@ version: '3.8'
 services:
   # Сервис телеграм бота
   bot:
-    build: ./bot_service
-    container_name: resume-bot
+    build: ./services/bot
+    container_name: resumeforgebot
     restart: always
     env_file: .env
     depends_on:
       - kafka
       - redis
     volumes:
-      - ./bot_service:/app
+      - ./bot:/app
       - resume_files:/app/files
 
   # Сервис обработки нейросетью
   ai_processor:
-    build: ./ai_processor_service
+    build: ./services/ai_processor
     container_name: resume-ai-processor
     restart: always
     env_file: .env
@@ -24,12 +24,12 @@ services:
       - kafka
       - minio
     volumes:
-      - ./ai_processor_service:/app
+      - ./services/ai_processor:/app
       - resume_files:/app/files
 
   # Сервис обратной связи
   callback:
-    build: ./callback_service
+    build: ./services/callback_service
     container_name: resume-callback
     restart: always
     env_file: .env
@@ -38,11 +38,11 @@ services:
       - postgres
       - redis
     volumes:
-      - ./callback_service:/app
+      - ./services/callback_service:/app
 
   # Сервис хранения
   storage:
-    build: ./storage_service
+    build: ./services/storage
     container_name: resume-storage
     restart: always
     env_file: .env
@@ -51,8 +51,8 @@ services:
       - redis
       - minio
     volumes:
-      - ./storage_service:/app
-      - ./storage_service/migrations:/app/migrations
+      - ./services/storage:/app
+      - ./services/storage/migrations:/app/migrations
 
   # Kafka и Zookeeper
   zookeeper:
@@ -115,6 +115,16 @@ services:
     volumes:
       - minio_data:/data
     command: server /data --console-address ":9001"
+  
+  # Платежный сервис
+  payment:
+    build: ./services/payment
+    container_name: resume-payment
+    restart: always
+    env_file: .env
+    depends_on:
+      - kafka
+      - postgres
 
 volumes:
   postgres_data:

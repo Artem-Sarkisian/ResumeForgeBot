@@ -28,7 +28,7 @@ The project may be used solely for studying microservice architecture patterns a
 - **Docker & Docker Compose** - containerization and orchestration
 
 ### AI & API
-- **DeepSeek API** - AI for processing and enhancing resumes
+- **Claude API** - AI for processing and enhancing resumes
 - **Tinkoff API** - payment solution for monetization
 
 ## 🏗️ Project Architecture
