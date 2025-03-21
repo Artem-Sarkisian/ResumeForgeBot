@@ -1,10 +1,11 @@
+import types
 from aiogram import Router, F
 from aiogram.types import Message
-from aiogram.filters import Command
+from aiogram.filters import Command, CommandStart
 
-router = Router()
+base_router = Router()
 
-@router.message(Command("start"))
+@router.message(CommandStart())
 async def cmd_start(message: Message):
     await message.answer(
         "👋 Добро пожаловать в Resume Forge Bot!\n\n"
@@ -27,3 +28,7 @@ async def cmd_help(message: Message):
         "У вас есть одно бесплатное улучшение."
     )
     await message.answer(help_text, parse_mode="HTML")
+    
+@router.message(Command("balance"))
+async def balance(message: types.Message):
+    await message.answer("Ваш баланс: N")
