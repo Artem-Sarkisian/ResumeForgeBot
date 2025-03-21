@@ -11,7 +11,7 @@ services:
       - kafka
       - redis
     volumes:
-      - ./bot:/app
+      - ./services/bot:/app
       - resume_files:/app/files
 
   # Сервис обработки нейросетью
@@ -29,7 +29,7 @@ services:
 
   # Сервис обратной связи
   callback:
-    build: ./services/callback_service
+    build: ./services/callback
     container_name: resume-callback
     restart: always
     env_file: .env
@@ -42,11 +42,7 @@ services:
 
   # Сервис хранения
   storage:
-<<<<<<< HEAD
     build: ./services/storage
-=======
-    build: ./storage
->>>>>>> 29c0f1a (config and bot main done)
     container_name: resume-storage
     restart: always
     env_file: .env

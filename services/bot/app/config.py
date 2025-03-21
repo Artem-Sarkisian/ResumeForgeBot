@@ -11,12 +11,8 @@ class Settings(BaseSettings):
     
     model_config = {
         "env_file": ".env",
-<<<<<<< HEAD
-        "case_sensitive": True
-=======
         "case_sensitive": True,
         "extra": "allow"
->>>>>>> 29c0f1a (config and bot main done)
     }
 
 # Глобальный экземпляр
