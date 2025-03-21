@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [tool.poetry]
 name = "resumeforgebot"
 version = "0.1.0"
@@ -10,3 +11,17 @@ aiogram = "^3.0.0"
 redis = "^5.0.0"
 kafka-python = "^2.0.0"
 python-dotenv = "^1.0.0"
+=======
+[project]
+name = "bot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13.2"
+dependencies = [
+    "aiogram>=3.19.0",
+    "pydantic>=2.10.6",
+    "pydantic-settings>=2.8.1",
+    "python-dotenv==1.0.1",
+]
+>>>>>>> 29c0f1a (config and bot main done)

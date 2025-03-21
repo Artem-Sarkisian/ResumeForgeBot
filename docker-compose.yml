@@ -42,7 +42,11 @@ services:
 
   # Сервис хранения
   storage:
+<<<<<<< HEAD
     build: ./services/storage
+=======
+    build: ./storage
+>>>>>>> 29c0f1a (config and bot main done)
     container_name: resume-storage
     restart: always
     env_file: .env
